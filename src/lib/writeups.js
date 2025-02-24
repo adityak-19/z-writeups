@@ -22,7 +22,7 @@ export async function getWriteups() {
       for (const category of categories) {
         const categoryPath = path.join(eventPath, category);
         const categoryStat = await fs.stat(categoryPath);
-        if (!categoryStat.isDirectory() || category === "images") continue; // Skip images folder
+        if (!categoryStat.isDirectory() || category === "images" || category === "assets") continue; // Skip images folder
 
         writeups[event][category] = [];
 

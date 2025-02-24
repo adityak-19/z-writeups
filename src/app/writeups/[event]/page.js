@@ -99,12 +99,14 @@ export default function EventPage({ params: paramsPromise }) {
           className="relative mb-16"
         >
           {writeups?.banner && writeups.banner.trim() !== '' && (
-            <div className="absolute inset-0 opacity-5">
+            <div className="absolute inset-0 w-full h-full">
               <Image
                 src={writeups.banner}
-                alt="Event Banner"
+                alt="Event Banner Background"
                 fill
-                className="object-cover rounded-xl"
+                className="object-cover rounded-xl opacity-5"
+                quality={50}
+                priority
               />
             </div>
           )}
@@ -142,12 +144,15 @@ export default function EventPage({ params: paramsPromise }) {
                 </div>
                 
                 {writeups?.banner && writeups.banner.trim() !== '' && (
-                  <div className="relative w-full h-48 rounded-lg overflow-hidden">
+                  <div className="relative w-full h-[300px] md:h-[400px] rounded-lg overflow-hidden">
                     <Image
                       src={writeups.banner}
                       alt="Event Banner"
                       fill
-                      className="object-cover"
+                      className="object-contain"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      quality={100}
+                      priority
                     />
                   </div>
                 )}
