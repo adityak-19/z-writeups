@@ -16,7 +16,7 @@ Author : Pushkar Deore
 
 FLAG FORMAT: `VishwaCTF{}`
 
-![](/assets/1_NO3o0IpNRxB91YJT274ixA.png)
+![](../assets/1_NO3o0IpNRxB91YJT274ixA.png)
 
 ## Solution:
 
