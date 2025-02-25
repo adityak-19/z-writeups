@@ -6,11 +6,36 @@ import ReactMarkdown from 'react-markdown';
 import { motion } from "framer-motion";
 import Image from "next/image";
 
+const DEFAULT_OWNER = 'adityak-19';
+const DEFAULT_REPO = 'z-writeups';
+
 export default function EventPage({ params: paramsPromise }) {
   const params = use(paramsPromise);
   const [writeups, setWriteups] = useState(null);
   const [aboutContent, setAboutContent] = useState('');
   const [loading, setLoading] = useState(true);
+
+  const getImageUrl = (relativePath) => {
+    if (!relativePath) return '';
+    
+    // Log incoming path
+    console.log('Original path:', relativePath);
+    
+    // Remove any leading slashes and unnecessary path segments
+    const cleanPath = relativePath
+      .replace(/^\//, '')
+      .replace(/^public\//, '')
+      .replace(/^writeups\//, '')
+      .replace(/^images\//, '');
+    
+    // Construct the full URL using assets folder
+    const fullUrl = `https://raw.githubusercontent.com/${DEFAULT_OWNER}/${DEFAULT_REPO}/main/public/writeups/${params.event}/assets/${cleanPath}`;
+    
+    // Log the final URL
+    console.log('Final URL:', fullUrl);
+    
+    return fullUrl;
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -76,7 +101,24 @@ export default function EventPage({ params: paramsPromise }) {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-foreground font-mono">
+    <main className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-[#0a192f] text-foreground font-mono relative">
+      {writeups?.banner && (
+        <div className="absolute inset-0 w-full h-full">
+          <Image
+            src={getImageUrl(writeups.banner)}
+            alt="Event Banner Background"
+            fill
+            className="object-cover rounded-xl opacity-5"
+            quality={50}
+            priority
+            onError={(e) => {
+              console.error('Background image failed to load:', writeups.banner);
+              e.target.style.display = 'none';
+            }}
+          />
+        </div>
+      )}
+      
       <div className="max-w-7xl mx-auto p-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -98,19 +140,6 @@ export default function EventPage({ params: paramsPromise }) {
           transition={{ delay: 0.1 }}
           className="relative mb-16"
         >
-          {writeups?.banner && writeups.banner.trim() !== '' && (
-            <div className="absolute inset-0 w-full h-full">
-              <Image
-                src={writeups.banner}
-                alt="Event Banner Background"
-                fill
-                className="object-cover rounded-xl opacity-5"
-                quality={50}
-                priority
-              />
-            </div>
-          )}
-          
           <div className="relative z-10">
             <h1 className="text-6xl font-bold text-center">
               <span className="text-white">&lt;</span>
@@ -146,13 +175,18 @@ export default function EventPage({ params: paramsPromise }) {
                 {writeups?.banner && writeups.banner.trim() !== '' && (
                   <div className="relative w-full h-[300px] md:h-[400px] rounded-lg overflow-hidden">
                     <Image
-                      src={writeups.banner}
+                      src={getImageUrl(writeups.banner)}
                       alt="Event Banner"
                       fill
                       className="object-contain"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       quality={100}
                       priority
+                      onError={(e) => {
+                        console.error('Image failed to load:', writeups.banner);
+                        console.log('Attempted URL:', getImageUrl(writeups.banner));
+                        e.target.style.display = 'none';
+                      }}
                     />
                   </div>
                 )}
@@ -176,7 +210,7 @@ export default function EventPage({ params: paramsPromise }) {
             <div className="bg-black/40 backdrop-blur-sm rounded-xl p-6 border border-green-500/20">
               <h2 className="text-2xl font-bold text-white mb-6">Challenges</h2>
               <div className="space-y-6">
-                {writeups && Object.entries(writeups).map(([category, categoryWriteups]) => {
+                {Object.entries(writeups?.categories || {}).map(([category, categoryWriteups]) => {
                   if (!Array.isArray(categoryWriteups)) return null;
                   
                   return (
