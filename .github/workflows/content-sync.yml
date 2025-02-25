@@ -1,0 +1,18 @@
+name: Sync Content
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'public/writeups/**'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger content revalidation
+        run: |
+          curl -X POST ${{ secrets.DEPLOYMENT_URL }}/api/github-webhook \
+          -H "Content-Type: application/json" \
+          -d '{"ref":"refs/heads/main"}' 

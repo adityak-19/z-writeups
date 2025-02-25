@@ -1,22 +1,26 @@
 "use server";
 
-import fs from "fs/promises";
-import path from "path";
 import matter from "gray-matter";
+import { Octokit } from "@octokit/rest";
 
-const writeupsDir = path.join(process.cwd(), "public/writeups");
+const octokit = new Octokit({
+  auth: process.env.GITHUB_TOKEN
+});
 
 export async function getWriteupMetadata(event) {
   try {
-    const filePath = path.join(writeupsDir, event, "about.md");
-    const fileContent = await fs.readFile(filePath, "utf-8");
+    const { data: file } = await octokit.repos.getContent({
+      owner: process.env.GITHUB_REPO.split('/')[0],
+      repo: process.env.GITHUB_REPO.split('/')[1],
+      path: `public/writeups/${event}/about.md`
+    });
+
+    const content = Buffer.from(file.content, 'base64').toString();
+    const { data } = matter(content);
     
-    const { data } = matter(fileContent);
-    
-    console.log("Parsed metadata:", data); // Log metadata
     return { metadata: data };
   } catch (error) {
-    console.error("Error fetching about.md:", error);
+    console.error("Error fetching about.md from GitHub:", error);
     return { error: "Failed to load about.md" };
   }
 }
