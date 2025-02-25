@@ -27,8 +27,8 @@ export async function getWriteups() {
 
     // Fetch content from GitHub
     const { data: contents } = await octokit.repos.getContent({
-      owner: REPO_OWNER,
-      repo: REPO_NAME,
+      owner: "adityak-19",
+      repo: "z-writeups",
       path: "public/writeups"
     });
 
